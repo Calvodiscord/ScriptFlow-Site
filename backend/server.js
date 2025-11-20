@@ -15,7 +15,7 @@ const app = express();
 const corsOptions = {
     // IMPORTANTE: Substitua a URL abaixo pela URL real do seu SITE ESTÁTICO (frontend) no Render.
     // Exemplo: 'https://instagram-clone-client-yyyy.onrender.com'
-    origin: 'SUA_URL_DO_FRONTEND_AQUI',
+    origin: 'https://scriptflow-site-1.onrender.com',
     optionsSuccessStatus: 200 // Para navegadores mais antigos
 };
 
