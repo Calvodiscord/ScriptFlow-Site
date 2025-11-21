@@ -1,10 +1,8 @@
-// backend/controllers/postController.js
-
 const Post = require('../models/Post');
 const User = require('../models/User');
 const cloudinary = require('cloudinary').v2;
 
-// Configuração do Cloudinary (coloque suas credenciais do .env)
+// É importante ter a configuração do Cloudinary aqui, lendo do .env
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -26,7 +24,7 @@ exports.createPost = async (req, res) => {
         const post = await newPost.save();
         res.json(post);
     } catch (err) {
-        console.error(err.message);
+        console.error("Erro ao criar post:", err.message);
         res.status(500).send('Erro no servidor');
     }
 };
@@ -35,15 +33,18 @@ exports.createPost = async (req, res) => {
 exports.getFeedPosts = async (req, res) => {
     try {
         const currentUser = await User.findById(req.user.id);
-        const userPosts = await Post.find({ user: req.user.id });
-        const friendPosts = await Promise.all(
-            currentUser.following.map(friendId => {
-                return Post.find({ user: friendId });
-            })
-        );
-        res.json(userPosts.concat(...friendPosts));
+        
+        // Pega os Ids dos usuários que o usuário atual segue, incluindo ele mesmo
+        const followingIds = [...currentUser.following, req.user.id];
+
+        // Busca todos os posts dos usuários seguidos
+        const feedPosts = await Post.find({ user: { $in: followingIds } })
+            .populate('user', 'username profilePicture') // <-- MUDANÇA ESSENCIAL: Adiciona dados do usuário ao post
+            .sort({ createdAt: -1 }); // Ordena os posts, do mais novo para o mais antigo
+
+        res.json(feedPosts);
     } catch (err) {
-        console.error(err.message);
+        console.error("Erro ao buscar feed:", err.message);
         res.status(500).send('Erro no servidor');
     }
 };
