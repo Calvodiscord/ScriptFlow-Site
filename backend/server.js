@@ -1,3 +1,5 @@
+// backend/server.js - VERSÃO COMPLETA E CORRIGIDA
+
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -8,9 +10,9 @@ dotenv.config();
 
 const app = express();
 
-// Configuração do CORS para permitir requisições do seu frontend
+// Configuração do CORS
 const corsOptions = {
-    // IMPORTANTE: Verifique se esta é a URL correta do seu frontend no Render
+    // Verifique se esta é a URL correta do seu frontend
     origin: 'https://scriptflow-site-1.onrender.com', 
     optionsSuccessStatus: 200
 };
@@ -20,11 +22,12 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Conexão com o banco de dados MongoDB
+// O process.env.MONGO_URI será lido das suas variáveis no Render
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log('MongoDB conectado com sucesso'))
 .catch(err => {
     console.error('Erro de conexão com o MongoDB:', err);
-    process.exit(1); // Encerra a aplicação se não conseguir conectar ao DB
+    process.exit(1);
 });
 
 // Rotas da API
@@ -36,4 +39,4 @@ app.use('/api/posts', require('./routes/posts'));
 const PORT = process.env.PORT || 5000;
 
 // Inicia o servidor
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));```
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
